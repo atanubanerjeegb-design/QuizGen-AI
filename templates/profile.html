@@ -1,0 +1,161 @@
+{% extends 'layout.html' %}
+
+{% block title %}User Profile - QuizGen.AI{% endblock %}
+
+{% block content %}
+<div class="row g-4 py-4">
+    
+    <!-- Profile Forms Sidebar -->
+    <div class="col-lg-5">
+        <!-- Avatar card -->
+        <div class="card-glass text-center mb-4">
+            <img src="https://robohash.org/{{ current_user.username | urlencode }}.png?set=set4&bgset=bg1&size=150x150" 
+                 alt="User Avatar" class="rounded-circle border border-cyan border-2 mb-3 bg-dark" style="width: 120px; height: 120px;">
+            <h3 class="font-outfit text-white mb-1">{{ current_user.username }}</h3>
+            <p class="text-secondary small mb-2"><i class="fa-solid fa-envelope me-1"></i> {{ current_user.email }}</p>
+            <span class="badge bg-secondary bg-opacity-25 text-secondary">Joined {{ current_user.created_at.strftime("%B %Y") }}</span>
+        </div>
+        
+        <!-- Update details Form -->
+        <div class="card-glass mb-4">
+            <h4 class="font-outfit text-white mb-4"><i class="fa-solid fa-user-pen text-accent-cyan me-2"></i> Update Details</h4>
+            
+            <form method="POST" action="">
+                {{ profile_form.hidden_tag() }}
+                <input type="hidden" name="submit_action" value="update_profile">
+                
+                <div class="mb-3">
+                    {{ profile_form.username.label(class="form-label") }}
+                    {{ profile_form.username(class="form-control" + (" is-invalid" if profile_form.username.errors else "")) }}
+                    {% if profile_form.username.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    {{ profile_form.email.label(class="form-label") }}
+                    {{ profile_form.email(class="form-control" + (" is-invalid" if profile_form.email.errors else "")) }}
+                    {% if profile_form.email.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid">
+                    {{ profile_form.submit(class="btn btn-glow-cyan") }}
+                </div>
+            </form>
+        </div>
+        
+        <!-- Change Password Form -->
+        <div class="card-glass">
+            <h4 class="font-outfit text-white mb-4"><i class="fa-solid fa-key text-accent-cyan me-2"></i> Change Password</h4>
+            
+            <form method="POST" action="">
+                {{ password_form.hidden_tag() }}
+                <input type="hidden" name="submit_action" value="change_password">
+                
+                <div class="mb-3">
+                    {{ password_form.current_password.label(class="form-label") }}
+                    {{ password_form.current_password(class="form-control" + (" is-invalid" if password_form.current_password.errors else ""), placeholder="Enter current password") }}
+                    {% if password_form.current_password.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in password_form.current_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    {{ password_form.new_password.label(class="form-label") }}
+                    {{ password_form.new_password(class="form-control" + (" is-invalid" if password_form.new_password.errors else ""), placeholder="Minimum 6 characters") }}
+                    {% if password_form.new_password.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in password_form.new_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    {{ password_form.confirm_new_password.label(class="form-label") }}
+                    {{ password_form.confirm_new_password(class="form-control" + (" is-invalid" if password_form.confirm_new_password.errors else ""), placeholder="Confirm new password") }}
+                    {% if password_form.confirm_new_password.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in password_form.confirm_new_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid">
+                    {{ password_form.submit(class="btn btn-glow-cyan") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Quiz History List -->
+    <div class="col-lg-7">
+        <div class="card-glass h-100">
+            <h4 class="font-outfit text-white mb-4"><i class="fa-solid fa-history text-accent-cyan me-2"></i> Quiz History</h4>
+            <p class="text-secondary small mb-4">A complete log of your past quiz attempts and details.</p>
+            
+            {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover border-secondary align-middle">
+                        <thead>
+                            <tr>
+                                <th class="border-secondary text-secondary">Quiz Title</th>
+                                <th class="border-secondary text-secondary">Score</th>
+                                <th class="border-secondary text-secondary">Percentage</th>
+                                <th class="border-secondary text-secondary text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in history %}
+                                <tr>
+                                    <td class="font-outfit text-white fw-bold">{{ record.quiz.title if record.quiz else "Deleted Quiz" }}</td>
+                                    <td class="text-secondary">{{ record.score }} / {{ record.total_questions }}</td>
+                                    <td>
+                                        {% if record.percentage >= 80 %}
+                                            <span class="text-success fw-bold">{{ record.percentage }}%</span>
+                                        {% elif record.percentage >= 60 %}
+                                            <span class="text-warning fw-bold">{{ record.percentage }}%</span>
+                                        {% else %}
+                                            <span class="text-danger fw-bold">{{ record.percentage }}%</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ url_for('quiz.view_result', result_id=record.id) }}" class="btn btn-glass-primary btn-sm">
+                                            <i class="fa-solid fa-eye me-1"></i> Review
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">You have not completed any quizzes yet.</p>
+                    <a href="{{ url_for('main.upload') }}" class="btn btn-glow-cyan btn-sm mt-3">
+                        <i class="fa-solid fa-cloud-arrow-up me-1"></i> Generate Your First Quiz
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

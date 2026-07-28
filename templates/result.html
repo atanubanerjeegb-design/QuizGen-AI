@@ -1,0 +1,205 @@
+{% extends 'layout.html' %}
+
+{% block title %}Quiz Results - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-10 col-xl-9">
+        
+        <!-- Score Summary Header -->
+        <div class="card-glass p-4 p-md-5 text-center mb-5">
+            <h1 class="font-outfit text-white mb-2">Quiz Completed!</h1>
+            <p class="text-secondary mb-4">{{ quiz.title }}</p>
+            
+            <div class="row justify-content-center g-3 mb-4">
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="py-3 border border-secondary border-opacity-20 rounded-3 bg-white bg-opacity-5">
+                        <span class="text-secondary small d-block mb-1">Percentage</span>
+                        <h3 class="font-outfit text-accent-cyan mb-0">{{ result.percentage }}%</h3>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="py-3 border border-secondary border-opacity-20 rounded-3 bg-white bg-opacity-5">
+                        <span class="text-secondary small d-block mb-1">Score</span>
+                        <h3 class="font-outfit fw-bold mb-0" style="color:#22c55e;">
+    {{ result.score }} / {{ result.total_questions }}
+</h3>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="py-3 border border-secondary border-opacity-20 rounded-3 bg-white bg-opacity-5">
+                        <span class="text-secondary small d-block mb-1">Wrong Answers</span>
+                        <h3 class="font-outfit text-danger mb-0">{{ result.total_questions - result.score }}</h3>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="py-3 border border-secondary border-opacity-20 rounded-3 bg-white bg-opacity-5">
+                        <span class="text-secondary small d-block mb-1">Time Taken</span>
+                        <h3 class="font-outfit text-primary fw-bold mb-0">{{ time_taken_formatted }}</h3>
+                    </div>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <div class="py-3 border border-secondary border-opacity-20 rounded-3 bg-white bg-opacity-5">
+                        <span class="text-secondary small d-block mb-1">Difficulty</span>
+                        <h3 class="font-outfit text-warning mb-0">{{ quiz.difficulty }}</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Topic Analysis section -->
+            <div class="row justify-content-center g-3 mb-4 text-start">
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 strong-topics-card">
+                        <strong class="font-outfit text-white"><i class="fa-solid fa-circle-check me-1"></i> Strong Topics</strong>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for topic in strong_topics %}
+                                <span class="badge strong-topic-badge font-outfit">{{ topic }}</span>
+                            {% else %}
+                                <span class="text-secondary small">None identified</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 weak-topics-card">
+                        <strong class="text-danger font-outfit d-block mb-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> Weak Topics</strong>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for topic in weak_topics %}
+                                <span class="badge weak-topic-badge font-outfit">{{ topic }}</span>
+                            {% else %}
+                                <span class="text-secondary small">None! Excellent job!</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Indicator -->
+            <div class="col-md-8 mx-auto">
+                {% if result.percentage >= 80 %}
+                    <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success py-3 font-outfit" role="alert">
+                        <i class="fa-solid fa-face-laugh-beam me-2 fs-5"></i> Outstanding performance! You have mastered this content.
+                    </div>
+                {% elif result.percentage >= 60 %}
+                    <div class="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning py-3 font-outfit" role="alert">
+                        <i class="fa-solid fa-face-smile me-2 fs-5"></i> Good job! You understand the key concepts but keep practicing.
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger py-3 font-outfit" role="alert">
+                        <i class="fa-solid fa-circle-exclamation me-2 fs-5"></i> Review the material. Try reading the PDF notes again and retake the quiz.
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
+                <a href="{{ url_for('quiz.take_quiz', quiz_id=quiz.id) }}" class="btn btn-glow-cyan">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Retake Quiz
+                </a>
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-glass-primary">
+                    <i class="fa-solid fa-house me-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Detailed Questions Review -->
+        <h3 class="font-outfit text-white mb-4"><i class="fa-solid fa-magnifying-glass-chart text-accent-cyan me-2"></i> Question Review</h3>
+        
+        <div class="d-flex flex-column gap-4">
+            {% for item in review_data %}
+                {% set q = item.question %}
+                {% set is_correct = item.is_correct %}
+                {% set u_ans = item.user_answer %}
+                
+                <div class="card-glass review-card {{ 'correct' if is_correct else 'incorrect' }} p-4">
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="font-outfit text-white mb-0 col-10">
+                            <span class="text-secondary me-1">Question {{ loop.index }}:</span>
+                            {{ q.question_text }}
+                        </h5>
+                        
+                        {% if is_correct %}
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success px-2.5 py-1.5 font-outfit">
+                                <i class="fa-solid fa-circle-check me-1"></i> Correct
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger px-2.5 py-1.5 font-outfit">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Incorrect
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Options Review list -->
+                    <div class="options-review mt-3 mb-4">
+                        
+                        <!-- Option A -->
+                        <div class="p-3 mb-2 rounded border border-opacity-10 
+                            {% if q.correct_answer == 'A' %}
+                                border-success bg-success bg-opacity-10 text-success
+                            {% elif u_ans == 'A' and not is_correct %}
+                                border-danger bg-danger bg-opacity-10 text-danger
+                            {% else %}
+                                border-secondary bg-white bg-opacity-5 text-secondary
+                            {% endif %}">
+                            <strong>A.</strong> {{ q.option_a }}
+                            {% if q.correct_answer == 'A' %}<span class="float-end small"><i class="fa-solid fa-check-circle"></i> Correct Answer</span>{% endif %}
+                            {% if u_ans == 'A' and not is_correct %}<span class="float-end small"><i class="fa-solid fa-circle-xmark"></i> Your Selection</span>{% endif %}
+                        </div>
+                        
+                        <!-- Option B -->
+                        <div class="p-3 mb-2 rounded border border-opacity-10 
+                            {% if q.correct_answer == 'B' %}
+                                border-success bg-success bg-opacity-10 text-success
+                            {% elif u_ans == 'B' and not is_correct %}
+                                border-danger bg-danger bg-opacity-10 text-danger
+                            {% else %}
+                                border-secondary bg-white bg-opacity-5 text-secondary
+                            {% endif %}">
+                            <strong>B.</strong> {{ q.option_b }}
+                            {% if q.correct_answer == 'B' %}<span class="float-end small"><i class="fa-solid fa-check-circle"></i> Correct Answer</span>{% endif %}
+                            {% if u_ans == 'B' and not is_correct %}<span class="float-end small"><i class="fa-solid fa-circle-xmark"></i> Your Selection</span>{% endif %}
+                        </div>
+                        
+                        <!-- Option C -->
+                        <div class="p-3 mb-2 rounded border border-opacity-10 
+                            {% if q.correct_answer == 'C' %}
+                                border-success bg-success bg-opacity-10 text-success
+                            {% elif u_ans == 'C' and not is_correct %}
+                                border-danger bg-danger bg-opacity-10 text-danger
+                            {% else %}
+                                border-secondary bg-white bg-opacity-5 text-secondary
+                            {% endif %}">
+                            <strong>C.</strong> {{ q.option_c }}
+                            {% if q.correct_answer == 'C' %}<span class="float-end small"><i class="fa-solid fa-check-circle"></i> Correct Answer</span>{% endif %}
+                            {% if u_ans == 'C' and not is_correct %}<span class="float-end small"><i class="fa-solid fa-circle-xmark"></i> Your Selection</span>{% endif %}
+                        </div>
+                        
+                        <!-- Option D -->
+                        <div class="p-3 mb-2 rounded border border-opacity-10 
+                            {% if q.correct_answer == 'D' %}
+                                border-success bg-success bg-opacity-10 text-success
+                            {% elif u_ans == 'D' and not is_correct %}
+                                border-danger bg-danger bg-opacity-10 text-danger
+                            {% else %}
+                                border-secondary bg-white bg-opacity-5 text-secondary
+                            {% endif %}">
+                            <strong>D.</strong> {{ q.option_d }}
+                            {% if q.correct_answer == 'D' %}<span class="float-end small"><i class="fa-solid fa-check-circle"></i> Correct Answer</span>{% endif %}
+                            {% if u_ans == 'D' and not is_correct %}<span class="float-end small"><i class="fa-solid fa-circle-xmark"></i> Your Selection</span>{% endif %}
+                        </div>
+                        
+                    </div>
+                    
+                    <!-- Explanation Area -->
+                    <div class="p-3 rounded border border-secondary border-opacity-20 bg-dark bg-opacity-50">
+                        <h6 class="font-outfit text-white mb-2"><i class="fa-solid fa-circle-info text-accent-cyan me-1"></i> Explanation:</h6>
+                        <p class="text-secondary mb-0 small">{{ q.explanation }}</p>
+                    </div>
+                    
+                </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

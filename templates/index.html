@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block title %}QuizGen.AI - AI Powered PDF Quiz Generator{% endblock %}
+
+{% block content %}
+<div class="row align-items-center min-vh-75 py-5">
+    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+        <h1 class="display-3 font-outfit mb-3 lh-1">
+            Transform Study PDFs <br>
+            Into <span class="text-accent-cyan">Interactive Quizzes</span>
+        </h1>
+        <p class="fs-5 text-secondary mb-4 col-xl-10">
+            Upload your lecture notes, text books, or articles. Our intelligent AI extracts text, scans images, generates multiple-choice questions, and helps you master your subjects.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-glow-cyan btn-lg px-4 py-3">
+                <i class="fa-solid fa-rocket me-2"></i> Get Started Free
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-glass-primary btn-lg px-4 py-3">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Log In
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card-glass p-4 p-md-5 text-center position-relative">
+            <!-- Simulated Interface Graphics -->
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+                <span class="text-accent-cyan small font-outfit"><i class="fa-solid fa-circle-nodes me-1"></i> Gemini AI Analysis</span>
+                <span class="badge bg-success bg-opacity-25 text-success">Active</span>
+            </div>
+            
+            <div class="mock-upload-display py-4 mb-4 border border-secondary border-dashed rounded-3">
+                <i class="fa-solid fa-file-pdf text-danger display-4 mb-3"></i>
+                <h5 class="mb-1 font-outfit">Computer_Science_101.pdf</h5>
+                <p class="text-muted small">8.4 MB • Text & Images Extracted</p>
+                <div class="progress progress-glass mx-auto w-75 mt-3">
+                    <div class="progress-bar progress-bar-neon w-100" role="progressbar"></div>
+                </div>
+            </div>
+            
+            <div class="text-start">
+                <div class="card bg-white bg-opacity-5 border border-secondary border-opacity-20 rounded-3 p-3 mb-2">
+                    <span class="text-accent-cyan small font-outfit d-block mb-1">Question 1 of 10</span>
+                    <strong class="font-outfit text-white">What is the primary role of the CPU inside a computer?</strong>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6"><button class="btn btn-glass-primary btn-sm w-100 text-start py-2 opacity-50"><span class="badge bg-secondary me-2">A</span>Input Data</button></div>
+                    <div class="col-6"><button class="btn btn-glass-primary btn-sm w-100 text-start py-2 border-cyan text-cyan"><span class="badge bg-info me-2 text-dark">B</span>Execute Code</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Grid Section -->
+<div class="row g-4 py-5 mt-5">
+    <div class="col-md-4">
+        <div class="card-glass card-glass-interactive text-center h-100 p-4">
+            <div class="feature-icon-wrapper mb-3 text-accent-cyan">
+                <i class="fa-solid fa-file-invoice-dollar fs-2"></i>
+            </div>
+            <h4 class="font-outfit text-white mb-2">Dual PDF Parsing</h4>
+            <p class="text-muted small mb-0">
+                Leverages PyMuPDF and pdfplumber to extract clean structures, headings, and data tables with safety fallbacks.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-glass card-glass-interactive text-center h-100 p-4">
+            <div class="feature-icon-wrapper mb-3 text-accent-cyan">
+                <i class="fa-solid fa-eye fs-2"></i>
+            </div>
+            <h4 class="font-outfit text-white mb-2">Optical Character OCR</h4>
+            <p class="text-muted small mb-0">
+                Integrates Pillow and pytesseract to scan image-only PDFs, bringing photocopied and scanned documents to life.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-glass card-glass-interactive text-center h-100 p-4">
+            <div class="feature-icon-wrapper mb-3 text-accent-cyan">
+                <i class="fa-solid fa-microchip-ai fs-2"></i>
+            </div>
+            <h4 class="font-outfit text-white mb-2">Gemini AI Generator</h4>
+            <p class="text-muted small mb-0">
+                Utilizes Google Gemini 1.5 to analyze concepts and build smart, conceptual, multi-level multiple choice questions.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

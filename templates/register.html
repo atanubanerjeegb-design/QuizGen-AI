@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+
+{% block title %}Sign Up - QuizGen.AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center py-5">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="card-glass p-4 p-md-5">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-user-plus text-accent-cyan display-5 mb-3"></i>
+                <h2 class="font-outfit text-white">Create Account</h2>
+                <p class="text-muted small">Sign up to start generating quizzes from PDFs</p>
+            </div>
+            
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Enter a unique username") }}
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="name@example.com") }}
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="Minimum 6 characters") }}
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else ""), placeholder="Re-enter password") }}
+                    {% if form.confirm_password.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid mb-3">
+                    {{ form.submit(class="btn btn-glow-cyan py-2.5 btn-block") }}
+                </div>
+            </form>
+            
+            <div class="text-center mt-4 pt-2 border-top border-secondary border-opacity-20">
+                <p class="text-muted small mb-0">Already have an account? <a href="{{ url_for('auth.login') }}" class="text-accent-cyan text-decoration-none">Log In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

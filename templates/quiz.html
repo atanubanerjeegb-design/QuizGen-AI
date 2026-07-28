@@ -1,0 +1,135 @@
+{% extends 'layout.html' %}
+
+{% block title %}Attempting Quiz - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4" id="quiz-workspace" data-quiz-id="{{ quiz.id }}">
+    
+    <!-- Main Quiz Interface -->
+    <div class="col-lg-8">
+        <div class="card-glass p-4 mb-4">
+            
+            <!-- Quiz Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                <div>
+                    <h3 class="font-outfit text-white mb-1">{{ quiz.title }}</h3>
+                    <span class="badge bg-secondary font-outfit btn-sm">{{ quiz.difficulty }} Difficulty</span>
+                </div>
+                
+                <!-- Countdown Timer -->
+                <div id="timer-box" class="timer-container">
+                    <i class="fa-regular fa-clock me-2 text-accent-cyan fs-5"></i>
+                    <span id="time-display" class="font-outfit fw-bold text-accent-cyan fs-5">00:00</span>
+                </div>
+            </div>
+            
+            <!-- Completion Progress Bar -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between text-secondary small mb-2 flex-wrap gap-2">
+                    <span id="question-number-display" class="fw-bold text-white">Question 1 of {{ questions | length }}</span>
+                    <span id="progress-ratio">0/{{ questions | length }} Answered</span>
+                    <span id="remaining-display">{{ questions | length }} Remaining</span>
+                    <span id="time-left-display" class="text-accent-cyan">Time left: --:--</span>
+                </div>
+                <div class="progress progress-glass">
+                    <div id="quiz-progress-bar" class="progress-bar progress-bar-neon" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            
+            <!-- Question Panels -->
+            <div id="questions-wrapper">
+                {% for q in questions %}
+                    <div class="question-panel d-none" id="q-panel-{{ loop.index0 }}" data-question-id="{{ q.id }}">
+                        <h4 class="font-outfit text-white mb-4">
+                            <span class="text-accent-cyan me-1">Q{{ loop.index }}.</span> {{ q.question_text }}
+                        </h4>
+                        
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-option="A">
+                                <span class="option-badge">A</span>
+                                <span class="option-text">{{ q.option_a }}</span>
+                            </button>
+                            
+                            <button type="button" class="option-btn" data-option="B">
+                                <span class="option-badge">B</span>
+                                <span class="option-text">{{ q.option_b }}</span>
+                            </button>
+                            
+                            <button type="button" class="option-btn" data-option="C">
+                                <span class="option-badge">C</span>
+                                <span class="option-text">{{ q.option_c }}</span>
+                            </button>
+                            
+                            <button type="button" class="option-btn" data-option="D">
+                                <span class="option-badge">D</span>
+                                <span class="option-text">{{ q.option_d }}</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Controls Toolbar -->
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top border-secondary border-opacity-25">
+                <button type="button" id="prev-btn" class="btn btn-glass-primary px-4 py-2">
+                    <i class="fa-solid fa-chevron-left me-1"></i> Previous
+                </button>
+                
+                <div>
+                    <button type="button" id="flag-btn" class="btn btn-glass-primary text-warning px-4 py-2 me-2">
+                        <i class="fa-regular fa-flag me-1"></i> Flag
+                    </button>
+                    <button type="button" id="skip-btn" class="btn btn-glass-primary px-4 py-2">
+                        Skip
+                    </button>
+                </div>
+                
+                <button type="button" id="next-btn" class="btn btn-glow-cyan px-4 py-2">
+                    Next <i class="fa-solid fa-chevron-right ms-1"></i>
+                </button>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Sidebar Quiz Status -->
+    <div class="col-lg-4">
+        <div class="card-glass">
+            <h4 class="font-outfit text-white mb-3">Review Grid</h4>
+            <p class="text-secondary small mb-4">Click any box to jump directly to that question.</p>
+            
+            <!-- Navigation Grid -->
+            <div class="nav-grid mb-4" id="navigation-grid">
+                {% for q in questions %}
+                    <button type="button" class="nav-grid-btn" id="nav-btn-{{ loop.index0 }}" data-index="{{ loop.index0 }}">
+                        {{ loop.index }}
+                    </button>
+                {% endfor %}
+            </div>
+            
+            <div class="border-top border-secondary border-opacity-20 pt-3">
+                <div class="d-flex align-items-center small text-secondary mb-2">
+                    <span class="badge bg-primary bg-opacity-25 border border-primary text-primary me-2" style="width: 16px; height: 16px; padding: 0;"></span> Answered
+                </div>
+                <div class="d-flex align-items-center small text-secondary mb-2">
+                    <span class="badge bg-warning bg-opacity-15 border border-warning text-warning me-2" style="width: 16px; height: 16px; padding: 0;"></span> Flagged for review
+                </div>
+                <div class="d-flex align-items-center small text-secondary">
+                    <span class="badge bg-dark bg-opacity-20 border border-secondary text-secondary me-2" style="width: 16px; height: 16px; padding: 0;"></span> Unanswered
+                </div>
+            </div>
+            
+            <div class="d-grid mt-4">
+                <button type="button" id="submit-quiz-btn" class="btn btn-outline-danger btn-block py-2.5">
+                    <i class="fa-solid fa-paper-plane me-2"></i> Submit Quiz
+                </button>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}
